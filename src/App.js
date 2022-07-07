@@ -6,7 +6,8 @@ function App() {
 
   const [input, setInput] = useState({
     accountId: '',
-    password: ''
+    password: '',
+    active: false
   });
 
   const {accountId, password} = input;
@@ -44,6 +45,15 @@ function App() {
     setUser(users.filter(user => user.id !== id));
   };
 
+  const onToggle = id => {
+    setUser(users.map(user =>
+      user.id === id ? {
+        ...user,
+        active: !user.active
+      } : user
+    ));
+  }
+
   return (
     <>
       <CreateUser
@@ -52,7 +62,7 @@ function App() {
         onChange={onChange}
         onCreate={onCreate} />
 
-      <UserList users={users} onRemove={onRemove} />
+      <UserList users={users} onRemove={onRemove} onToggle={onToggle} />
     </>
   );  
 }
