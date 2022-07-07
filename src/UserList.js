@@ -3,12 +3,14 @@ import React from "react";
 function User({user}) {
     return (
         <div>
-            <b>{user.accountId}</b> <span>{user.password}</span>
+            <p>
+                <b>{user.accountId}</b>❤️<b>{user.password}</b>
+            </p>
         </div>
     );
 }
 
-function UserList() {
+function UserList({users}) {
     
     return (
         <div>
@@ -16,7 +18,7 @@ function UserList() {
                 <User user={user} key={user.id}/>
             ))}
         </div>
-    )
+    );
 }
 
 export default UserList;
