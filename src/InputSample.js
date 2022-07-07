@@ -4,7 +4,7 @@ function InputSample() {
 
     const [input, setInput] = useState({
         name: '',
-        age: 0
+        age: ''
     });
 
     const nameInput = useRef();
@@ -23,7 +23,7 @@ function InputSample() {
     const onReset = () => {
         setInput({
             name: '',
-            age: 0,
+            age: '',
         });
         nameInput.current.focus();
     };
@@ -31,7 +31,7 @@ function InputSample() {
     return (
         <div>
             <input name="name" placeholder="input your name" onChange={onChange} value={name} ref={nameInput}/>
-            <input name="age" placeholder="input your age" onChange={onChange} value={age}/>
+            <input type="number" name="age" placeholder="input your age" onChange={onChange} value={age}/>
             <button onClick={onReset}>RESET</button>
             <div>
                 <p><b>VAULE</b></p>
