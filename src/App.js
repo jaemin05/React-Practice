@@ -1,58 +1,99 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 import UserList from './UserList'
 import CreateUser from './CreateUser';
 
-function App() {
+function countActiveUsers(users) {
+  console.log('성공한 커플 수를 세는 중...');
+  return users.filter(user => user.active).length;
+} 
 
-  const [input, setInput] = useState({
+const initialState = {
+  input: {
     accountId: '',
     password: '',
     active: false
-  });
+  }, 
+  user: []
+};
 
-  const {accountId, password} = input;
+function reducer(state, action) {
+  switch (action.type) {
+    case 'CHANGE_INPUT':
+      return {
+        ...state,
+        input: {
+          ...state.input,
+          [action.name]: action.value
+        }
+      };
+      
+    case 'TOGGLE_USER':
+      return {
+        ...state,
+        users: state.users.map(user => 
+          user.id === action.id ? {...user, active: !user.active} : user)
+      };
 
-  const onChange = e => {
-    const {name, value} = e.target;
-    setInput({
-      ...input,
-      [name]: value
-    });
-  };
+    case 'CREATE_USER':
+      return {
+        input: initialState.input,
+        users: state.users.concat(action.user)
+      };
 
-  const [users, setUser] = useState([ 
-  ]);
+    case 'REMOVE_USER':
+      return {
+        ...state,
+        users: state.users.filter(user => user.id !== action.id)
+      };
 
+    default:
+      return state;
+  }
+}
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const nextId = useRef(1);
 
-  const onCreate = () => {
-    const user = {
-      id: nextId.current,
-      accountId,
-      password
-    };
+  const {users} = state;
+  const {accountId, password} = state.input;
 
-    setUser(users.concat(user));
-
-    setInput({
-      accountId:'',
-      password: ''
+  const onChange = useCallback(e => {
+    const {name, value} = e.target;
+    dispatch({
+      type: 'CHANGE_INPUT',
+      name, 
+      value
+    });
+  }, []);
+  
+  const onCreate = useCallback(() => {
+    dispatch({
+      type: 'CREATE_USER',
+      user: {
+        id:nextId.current,
+        accountId,
+        password
+      }
     });
     nextId.current += 1;
-  };
+  }, [accountId, password]);
+  
+  const onRemove = useCallback(id => {
+    dispatch({
+      type: 'REMOVE_USER',
+      id
+    });
+  }, []);
 
-  const onRemove = id => {
-    setUser(users.filter(user => user.id !== id));
-  };
+  const onToggle = useCallback(id => {
+    dispatch({
+      type: 'TOGGLE_USER',
+      id
+    });
+  }, []);
 
-  const onToggle = id => {
-    setUser(users.map(user =>
-      user.id === id ? {
-        ...user,
-        active: !user.active
-      } : user
-    ));
-  }
+  const count = useMemo(() => countActiveUsers(users), [users]);
 
   return (
     <>
@@ -60,11 +101,12 @@ function App() {
         accountId={accountId}
         password={password}
         onChange={onChange}
-        onCreate={onCreate} />
-
-      <UserList users={users} onRemove={onRemove} onToggle={onToggle} />
+        onCreate={onCreate}
+      />
+      <UserList users={users} onToggle={onToggle} onRemove={onRemove} />
+      <div>성공한 커플 수 : {count}</div>
     </>
-  );  
+  );
 }
 
 export default App;
