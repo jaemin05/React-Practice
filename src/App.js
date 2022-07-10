@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 import UserList from './UserList'
 import CreateUser from './CreateUser';
+import useInputs from './hooks/useInputs';
 
 function countActiveUsers(users) {
   console.log('성공한 커플 수를 세는 중...');
@@ -8,41 +9,25 @@ function countActiveUsers(users) {
 } 
 
 const initialState = {
-  input: {
-    accountId: '',
-    password: '',
-    active: false
-  }, 
-  user: []
+  users: []
 };
 
 function reducer(state, action) {
   switch (action.type) {
-    case 'CHANGE_INPUT':
-      return {
-        ...state,
-        input: {
-          ...state.input,
-          [action.name]: action.value
-        }
-      };
       
     case 'TOGGLE_USER':
       return {
-        ...state,
         users: state.users.map(user => 
           user.id === action.id ? {...user, active: !user.active} : user)
       };
 
     case 'CREATE_USER':
       return {
-        input: initialState.input,
         users: state.users.concat(action.user)
       };
 
     case 'REMOVE_USER':
       return {
-        ...state,
         users: state.users.filter(user => user.id !== action.id)
       };
 
@@ -52,20 +37,13 @@ function reducer(state, action) {
 }
 
 function App() {
+  const [{accountId, password}, onChange, reset] = useInputs({
+  });
+
   const [state, dispatch] = useReducer(reducer, initialState);
   const nextId = useRef(1);
 
   const {users} = state;
-  const {accountId, password} = state.input;
-
-  const onChange = useCallback(e => {
-    const {name, value} = e.target;
-    dispatch({
-      type: 'CHANGE_INPUT',
-      name, 
-      value
-    });
-  }, []);
   
   const onCreate = useCallback(() => {
     dispatch({
@@ -76,8 +54,9 @@ function App() {
         password
       }
     });
+    reset();
     nextId.current += 1;
-  }, [accountId, password]);
+  }, [accountId, password, reset]);
   
   const onRemove = useCallback(id => {
     dispatch({
