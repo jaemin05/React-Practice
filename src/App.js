@@ -36,8 +36,13 @@ function reducer(state, action) {
   }
 }
 
+export const UserDispatch = React.createContext(null);
+
 function App() {
-  const [{accountId, password}, onChange, reset] = useInputs({
+  const [{accountId, password}, onChange, onReset] = useInputs({
+    accountId: "",
+    password: "",
+    active: false
   });
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -54,37 +59,24 @@ function App() {
         password
       }
     });
-    reset();
+    onReset();
     nextId.current += 1;
-  }, [accountId, password, reset]);
-  
-  const onRemove = useCallback(id => {
-    dispatch({
-      type: 'REMOVE_USER',
-      id
-    });
-  }, []);
+  }, [accountId, password, onReset]);
 
-  const onToggle = useCallback(id => {
-    dispatch({
-      type: 'TOGGLE_USER',
-      id
-    });
-  }, []);
 
   const count = useMemo(() => countActiveUsers(users), [users]);
 
   return (
-    <>
+    <UserDispatch.Provider value={dispatch}>
       <CreateUser
         accountId={accountId}
         password={password}
         onChange={onChange}
         onCreate={onCreate}
       />
-      <UserList users={users} onToggle={onToggle} onRemove={onRemove} />
+      <UserList users={users} />
       <div>성공한 커플 수 : {count}</div>
-    </>
+    </UserDispatch.Provider>
   );
 }
 
