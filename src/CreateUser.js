@@ -1,6 +1,6 @@
 import React from "react";
 
-function CreateUser({accountId, password, onChange, onCreate}) {
+const CreateUser = ({accountId, password, onChange, onCreate}) => {
     return (
         <div>
             <h1>이름을 적으면 사랑이 이루어져요!</h1>
