@@ -1,34 +1,45 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
+import { UserDispatch } from "./App";
 
 const User = React.memo(function({user, onRemove, onToggle}) {
-    useEffect(() => {
-        console.log('값이 설정됨');
-        console.log(user);
-        return () => {
-          console.log('바뀌기 전..');
-          console.log(user);
-        };
-    }, [user]);
+    const dispatch = useContext(UserDispatch);
 
     return (
             <p>
-                <b style={{cursor: 'pointer', color: user.active ? 'red' : 'black'}} onClick={() => onToggle(user.id)}>{user.accountId}</b>
+                <b style={{
+                    cursor: 'pointer',
+                    color: user.active ? 'red' : 'black'
+                }} 
+                onClick={() =>
+                    dispatch({type: 'TOGGLE_USER', id:user.id})
+                }>
+                {user.accountId}
+                </b>
                 ❤️
-                <b style={{cursor: 'pointer', color: user.active ? 'red' : "black"}} onClick={() => onToggle(user.id)}>{user.password}</b>
-                <button onClick={() => onRemove(user.id)}>REMOVE</button>
+                <b style={{
+                    cursor: 'pointer',
+                    color: user.active ? 'red' : "black"
+                }}
+                onClick={() =>
+                    dispatch({type: 'TOGGLE_USER', id:user.id})
+                }>
+                    {user.password}
+                </b>
+                <button onClick={() => {
+                    dispatch({type: 'REMOVE_USER', id:user.id});
+                }}>REMOVE</button>
             </p>
     );
 });
 
-const UserList = ({users, onRemove, onToggle}) => {
-    
+function UserList ({users}) {
     return (
         <div>
             {users.map(user => (
-                <User user={user} key={user.id} onRemove={onRemove} onToggle={onToggle} />
-            ))}
+                <User user={user} key={user.id} />
+            ))} 
         </div>
     );
 }
 
-export default UserList;
+export default React.memo(UserList);
