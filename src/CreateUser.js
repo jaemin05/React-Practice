@@ -8,13 +8,13 @@ const CreateUser = ({accountId, password, onChange, onCreate}) => {
                 name="accountId"
                 placeholder="이름을 입력하세요"
                 onChange={onChange}
-                value={accountId}/>
+                value={accountId || ''}/>
             
             <input 
                 name="password"
                 placeholder="이름을 입력하세요"
                 onChange={onChange}
-                value={password}
+                value={password || ''}
                 />         
             <button onClick={onCreate}>Create User</button>
         </div>
