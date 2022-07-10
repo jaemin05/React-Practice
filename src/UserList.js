@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-function User({user, onRemove, onToggle}) {
+const User = React.memo(function({user, onRemove, onToggle}) {
+    useEffect(() => {
+        console.log('값이 설정됨');
+        console.log(user);
+        return () => {
+          console.log('바뀌기 전..');
+          console.log(user);
+        };
+    }, [user]);
+
     return (
             <p>
                 <b style={{cursor: 'pointer', color: user.active ? 'red' : 'black'}} onClick={() => onToggle(user.id)}>{user.accountId}</b>
@@ -9,9 +18,9 @@ function User({user, onRemove, onToggle}) {
                 <button onClick={() => onRemove(user.id)}>REMOVE</button>
             </p>
     );
-}
+});
 
-function UserList({users, onRemove, onToggle}) {
+const UserList = ({users, onRemove, onToggle}) => {
     
     return (
         <div>
